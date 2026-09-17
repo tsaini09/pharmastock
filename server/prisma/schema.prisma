@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Medicine {
+  id              Int      @id @default(autoincrement())
+  name            String
+  genericName     String?
+  manufacturer    String?
+  reorderThreshold Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  batches   Batch[]
+  dispenses Dispense[]
+  outbox    OutboxEvent[]
+}
+
+model Batch {
+  id          Int      @id @default(autoincrement())
+  medicineId  Int
+  batchNumber String
+  quantity    Int
+  expiryDate  DateTime
+  quarantined Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  medicine  Medicine   @relation(fields: [medicineId], references: [id], onDelete: Cascade)
+  dispenses Dispense[]
+
+  @@index([medicineId, expiryDate])
+}
+model Dispense {
+  id          Int      @id @default(autoincrement())
+  medicineId  Int
+  batchId     Int
+  quantity    Int
+  dispensedAt DateTime @default(now())
+
+  medicine Medicine @relation(fields: [medicineId], references: [id])
+  batch    Batch    @relation(fields: [batchId], references: [id])
+}
+
+model OutboxEvent {
+  id         Int      @id @default(autoincrement())
+  medicineId Int
+  type       String
+  message    String
+  payload    String
+  createdAt  DateTime @default(now())
+  sent       Boolean  @default(false)
+
+  medicine Medicine @relation(fields: [medicineId], references: [id])
+}
