@@ -46,3 +46,5 @@ Important workflows were manually exercised through the application and API, inc
 ## Note
 
 The conversation with the AI was used as part of the development process. The actual conversation history should be retained alongside this project if the evaluation requires the complete AI interaction transcript.
+
+https://chatgpt.com/share/6aabd1c3-1df0-83e9-8a47-e26e489e89ed
